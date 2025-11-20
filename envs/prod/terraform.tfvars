@@ -19,7 +19,32 @@ vpc = {
     destination_cidr_block = "0.0.0.0/0"
     nat_destination_cidr_block = "0.0.0.0/0"
     
-   
+}
+
+ecr = {
+    ecr_name = "accounting-prod"
+    image_tag_mutability = "MUTABLE"
+    scan_on_push = false
+
+    auth_name = "auth-prod"
+    customer_support_name = "customer-support-prod"
+    gift_name = "gift-prod"
+    mobile_name = "mobile-prod"
+    notification_name = "notification-prod"
+    nginx_auth_name = "opalink/prod/nginx/auth"
+    restaurant_name = "resturant-prod"
+    super_admin_name ="super-admin-prod"
+    user_name = "user-prod"
+
+}
+
+ecs = {
+    cluster_name = "ProdCluster"
+    accounting_task_family = "accounting-prod-task-defination"
+    accounting_cpu = "1024"
+    memory = "2048"
+    ecs_network_mode = "awsvpc"
+    
 
 
 

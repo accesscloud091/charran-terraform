@@ -1,8 +1,5 @@
-variable "repositories" {
-  type        = list(string)
-  description = "ECR repo list"
-}
-
-variable "tags" {
-  type = map(string)
+variable "ecr" {
+  type = any
+  description = "Value of ecr repository"
+  
 }

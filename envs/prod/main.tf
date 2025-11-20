@@ -30,3 +30,9 @@ module "vpc" {
   source = "../../modules/vpc"
   vpc = var.vpc
 }
+
+module "ecr" {
+  source = "../../modules/ecr"
+  ecr = var.ecr
+  
+}
