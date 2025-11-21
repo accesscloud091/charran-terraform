@@ -10,7 +10,7 @@ resource "aws_vpc" "vpc" {
 
 
 #####public subnet################
-resource "aws_subnet" "opalink_prod_public_subnet" {
+resource "aws_subnet" "public_subnet1" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone
     cidr_block = var.vpc.subnet_public_cidr
@@ -21,7 +21,9 @@ resource "aws_subnet" "opalink_prod_public_subnet" {
       Name = "opalink-prod-public-subnet1-useast-1a"
     }
 }
-resource "aws_subnet" "opalink_prod_public_subnet2" {
+
+#opalink_prod_public_subnet2
+resource "aws_subnet" "public_subnet2" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone2
     cidr_block = var.vpc.subnet_public_cidr2
@@ -32,7 +34,7 @@ resource "aws_subnet" "opalink_prod_public_subnet2" {
     }
 }
 
-resource "aws_subnet" "opalink_prod_public_subnet3" {
+resource "aws_subnet" "public_subnet3" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone3
     cidr_block = var.vpc.subnet_public_cidr3
@@ -43,9 +45,10 @@ resource "aws_subnet" "opalink_prod_public_subnet3" {
     }
 }
 
+#pvt_subnet1
 
 #######private subnet###################
-resource "aws_subnet" "opalink_prod_pvt_subnet1" {
+resource "aws_subnet" "pvt_subnet1" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone
     cidr_block = var.vpc.subnet_pvt_cidr1
@@ -54,7 +57,8 @@ resource "aws_subnet" "opalink_prod_pvt_subnet1" {
     }
 }
 
-resource "aws_subnet" "opalink_prod_pvt_subnet4" {
+
+resource "aws_subnet" "pvt_subnet4" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone
     cidr_block = var.vpc.subnet_pvt_cidr4
@@ -63,7 +67,7 @@ resource "aws_subnet" "opalink_prod_pvt_subnet4" {
     }
 }
 
-resource "aws_subnet" "opalink_prod_pvt_subnet5" {
+resource "aws_subnet" "pvt_subnet5" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone2
     cidr_block = var.vpc.subnet_pvt_cidr5
@@ -72,7 +76,8 @@ resource "aws_subnet" "opalink_prod_pvt_subnet5" {
     }
 }
 
-resource "aws_subnet" "opalink_prod_pvt_subnet2" {
+
+resource "aws_subnet" "pvt_subnet2" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone2
     cidr_block = var.vpc.subnet_pvt_cidr2
@@ -80,8 +85,8 @@ resource "aws_subnet" "opalink_prod_pvt_subnet2" {
       Name = "opalink-prod-private-subnet2-useast-1b-app"
     }
 }
-
-resource "aws_subnet" "opalink_prod_pvt_subnet6" {
+#pvt_subnet6
+resource "aws_subnet" "pvt_subnet6" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone3
     cidr_block = var.vpc.subnet_pvt_cidr6
@@ -90,7 +95,8 @@ resource "aws_subnet" "opalink_prod_pvt_subnet6" {
     }
 }
 
-resource "aws_subnet" "opalink_prod_pvt_subnet3" {
+#pvt_subnet3
+resource "aws_subnet" "pvt_subnet3" {
     vpc_id = aws_vpc.vpc.id
     availability_zone = var.vpc.subnet_availability_zone3
     cidr_block = var.vpc.subnet_pvt_cidr3
@@ -100,8 +106,9 @@ resource "aws_subnet" "opalink_prod_pvt_subnet3" {
 }
 
 
+#public_route_table
 ##############route table #######################
-resource "aws_route_table" "prod_public_route_table" {
+resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -109,18 +116,18 @@ resource "aws_route_table" "prod_public_route_table" {
   }
 }
 
-    
+  
 #############  route  #######################
-resource "aws_route" "prod_public_route" {
-  route_table_id         = aws_route_table.prod_public_route_table.id
+resource "aws_route" "public_route" {
+  route_table_id         = aws_route_table.public_route_table.id
   destination_cidr_block = var.vpc.destination_cidr_block
-  gateway_id = aws_internet_gateway.prod_internet_gateway.id
+  gateway_id = aws_internet_gateway.internet_gateway.id
 }
 
 
 ################## internet gateway ####################
 
-resource "aws_internet_gateway" "prod_internet_gateway" {
+resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -132,24 +139,24 @@ resource "aws_internet_gateway" "prod_internet_gateway" {
 ############# route table associate (public) ###################
 
 resource "aws_route_table_association" "public_rt_assoc" {
-  subnet_id      = aws_subnet.opalink_prod_public_subnet.id
-  route_table_id = aws_route_table.prod_public_route_table.id
+  subnet_id      = aws_subnet.public_subnet1.id
+  route_table_id = aws_route_table.public_route_table.id
 }
 
 resource "aws_route_table_association" "public_rt_assoc2" {
-  subnet_id      = aws_subnet.opalink_prod_public_subnet2.id
-  route_table_id = aws_route_table.prod_public_route_table.id
+  subnet_id      = aws_subnet.public_subnet2.id
+  route_table_id = aws_route_table.public_route_table.id
 }
 
 resource "aws_route_table_association" "public_rt_assoc3" {
-  subnet_id      = aws_subnet.opalink_prod_public_subnet3.id
-  route_table_id = aws_route_table.prod_public_route_table.id
+  subnet_id      = aws_subnet. public_subnet3.id
+  route_table_id = aws_route_table.public_route_table.id
 }
 
 
 # ################ route table (private) ##################
-
-resource "aws_route_table" "prod-private-route-table-app" {
+#prod-private-route-table-app
+resource "aws_route_table" "private_route_table_app" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -158,9 +165,9 @@ resource "aws_route_table" "prod-private-route-table-app" {
 }
 
 ################### route route (private) ####################
-
-resource "aws_route" "prod_private_route_table_app" {
-  route_table_id         = aws_route_table.prod-private-route-table-app.id
+#"private_route_table_app"
+resource "aws_route" "private_route_table_app" {
+  route_table_id         = aws_route_table.private_route_table_app.id
   destination_cidr_block = var.vpc.nat_destination_cidr_block
   nat_gateway_id = aws_nat_gateway.nat_gateway.id
 }
@@ -169,24 +176,24 @@ resource "aws_route" "prod_private_route_table_app" {
 ################ route table association (private) #################
 
 resource "aws_route_table_association" "private_route_table_app_association1" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet1.id
-  route_table_id = aws_route_table.prod-private-route-table-app.id
+  subnet_id      = aws_subnet.pvt_subnet1.id
+  route_table_id = aws_route_table.private_route_table_app.id
 }
 
 resource "aws_route_table_association" "private_route_table_app_association2" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet2.id
-  route_table_id = aws_route_table.prod-private-route-table-app.id
+  subnet_id      = aws_subnet.pvt_subnet2.id
+  route_table_id = aws_route_table.private_route_table_app.id
 }
 
 resource "aws_route_table_association" "private_route_table_app_association3" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet3.id
-  route_table_id = aws_route_table.prod-private-route-table-app.id
+  subnet_id      = aws_subnet.pvt_subnet3.id
+  route_table_id = aws_route_table.private_route_table_app.id
 }
 
 
 ###################### route table (db) ##################
-
-resource "aws_route_table" "prod-private-route-table-db" {
+#private_route_table_db
+resource "aws_route_table" "private_route_table_db" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -196,8 +203,8 @@ resource "aws_route_table" "prod-private-route-table-db" {
 
 ################ route (db) #################
 
-resource "aws_route" "prod-private-route-table-db" {
-  route_table_id         = aws_route_table.prod-private-route-table-db.id
+resource "aws_route" "private_route_table_db" {
+  route_table_id         = aws_route_table.private_route_table_db.id
   destination_cidr_block = var.vpc.nat_destination_cidr_block
   nat_gateway_id = aws_nat_gateway.nat_gateway.id
 }
@@ -205,22 +212,22 @@ resource "aws_route" "prod-private-route-table-db" {
 ################ route table association (db) #################
 
 resource "aws_route_table_association" "private_rt_assoc_db4" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet4.id
-  route_table_id = aws_route_table.prod-private-route-table-db.id
+  subnet_id      = aws_subnet.pvt_subnet4.id
+  route_table_id = aws_route_table.private_route_table_db.id
 }
 
 resource "aws_route_table_association" "private_rt_assoc_db5" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet5.id
-  route_table_id = aws_route_table.prod-private-route-table-db.id
+  subnet_id      = aws_subnet.pvt_subnet5.id
+  route_table_id = aws_route_table.private_route_table_db.id
 }
 resource "aws_route_table_association" "private_rt_assoc_db6" {
-  subnet_id      = aws_subnet.opalink_prod_pvt_subnet6.id
-  route_table_id = aws_route_table.prod-private-route-table-db.id
+  subnet_id      = aws_subnet.pvt_subnet6.id
+  route_table_id = aws_route_table.private_route_table_db.id
 }
 
 
 resource "aws_nat_gateway" "nat_gateway" {
-  subnet_id = aws_subnet.opalink_prod_public_subnet.id
+  subnet_id = aws_subnet.public_subnet1.id
   allocation_id = aws_eip.nat_eip.id 
 
   tags = {

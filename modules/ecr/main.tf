@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "accounting_prod" {
+resource "aws_ecr_repository" "accounting" {
   name                 = var.ecr.ecr_name
   image_tag_mutability = var.ecr.image_tag_mutability
 

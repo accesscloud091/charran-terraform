@@ -3,3 +3,4 @@ variable "ecr" {
   description = "Value of ecr repository"
   
 }
+

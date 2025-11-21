@@ -43,10 +43,56 @@ ecs = {
     accounting_task_family = "accounting-prod-task-defination"
     accounting_cpu = "1024"
     memory = "2048"
-    ecs_network_mode = "awsvpc"
-    
+    ecs_network_mode = "awsvpc"   
+    desired_count = "1"
+    ecs.deployment_strategy = "ROLLING"
+   
+   ####accounting task def
+    accounting_container_name = "accounting" 
+    accounting_port_mapping_name  = "accounting-prod-port"
+    logs_region   = "us-east-1"
+    create_cloudwatch_group = true
+    accounting_requires_capabilities = "FARGATE"
+    accounting_log_group_name = "/ecs/accounting-prod-task-defination"
+    accounting_otel_collector_container_name  = "aws-otel-collector"
+    accounting_otel_image_arn = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"
 
+    #### accounting service
+    accounting_ecs_service_name = 	"accounting-prod-service-8ia6ni4r"
 
 
 
 }
+
+task_definition_policy_name = "opalink-prod-secret-manager-policy"
+
+ecs_task_definition_role_name = "opalink-prod-ecs-task-defination-role"
+
+lb = {
+    name = "opalink-prod-load-balancer"
+    type  = "application"
+    ip_address_type  = "ipv4"
+    sg_description = "prod-ecs-load-balancer-sg"
+    sg_name = "prod-ecs-load-balancer-sg"
+    target_name = "opalink-prod"
+    super_admin_port = 6003
+    auth_service_port = 3001
+    customer_support_port = 3002
+    accounting_service_port = 3000
+    restaurant_web_port = 6002
+    restaurant_service_port = 3004
+    mobile_service_port = 6001
+    nginx_service_port = 80
+    notification_port = 3003
+    user_service_port = 3005
+    gift_service_port = 3006
+
+}
+
+route53 = {
+    hosted_zone_name = "opalinkapp.com"
+}
+
+
+
+

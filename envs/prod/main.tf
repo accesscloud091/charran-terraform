@@ -31,8 +31,21 @@ module "vpc" {
   vpc = var.vpc
 }
 
-module "ecr" {
-  source = "../../modules/ecr"
-  ecr = var.ecr
+# module "ecr" {
+#   source = "../../modules/ecr"
+#   ecr = var.ecr
+  
+# }
+
+# module "ecs" {
+#   source = "../../modules/ecs"
+#   ecr = var.ecs
+  
+# }
+
+
+module "route53" {
+  source = "../../modules/route53"
+  route53 = var.route53
   
 }
