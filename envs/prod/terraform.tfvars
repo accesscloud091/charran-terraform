@@ -1,3 +1,6 @@
+environment = "prod"
+
+
 vpc = {
     cidr_block = "192.168.0.0/16"
 
@@ -72,9 +75,9 @@ lb = {
     name = "opalink-prod-load-balancer"
     type  = "application"
     ip_address_type  = "ipv4"
-    sg_description = "prod-ecs-load-balancer-sg"
-    sg_name = "prod-ecs-load-balancer-sg"
-    target_name = "opalink-prod"
+    sg_description = "ecs-load-balancer-sg"
+    sg_name = "ecs-load-balancer-sg"
+    target_name = "opalink"
     super_admin_port = 6003
     auth_service_port = 3001
     customer_support_port = 3002
@@ -91,8 +94,13 @@ lb = {
 
 route53 = {
     hosted_zone_name = "opalinkapp.com"
+    record_type = "A"
+
 }
 
+acm = {
+    domain_name = "api.opalinkapp.com"
+}
 
 
 

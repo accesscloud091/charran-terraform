@@ -1,0 +1,27 @@
+variable "lb" {
+    type = any
+  
+}
+
+variable "environment" {
+    type = string
+  
+}
+
+variable "vpc_id" {
+    type = string
+  
+}
+variable "public_subnet1" {
+    type = string
+  
+}
+
+variable "public_subnet2" {
+    type = string
+  
+}
+variable "public_subnet3" {
+    type = string
+  
+}

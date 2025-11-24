@@ -1,31 +1,3 @@
-# module "vpc" {
-#   source = "../../modules/vpc"
-
-#   name   = "opalink-prod-vpc"
-#   cidr   = "172.20.0.0/16"
-
-#   azs = ["us-east-1a", "us-east-1b", "us-east-1c"]
-
-#   public_subnets = [
-#     "172.20.1.0/24",
-#     "172.20.2.0/24",
-#     "172.20.3.0/24"
-#   ]
-
-#   private_app_subnets = [
-#     "172.20.11.0/24",
-#     "172.20.21.0/24",
-#     "172.20.31.0/24"
-#   ]
-
-#   private_db_subnets = [
-#     "172.20.12.0/24",
-#     "172.20.22.0/24",
-#     "172.20.32.0/24"
-#   ]
-# }
-
-
 module "vpc" {
   source = "../../modules/vpc"
   vpc = var.vpc
@@ -43,9 +15,30 @@ module "vpc" {
   
 # }
 
+module "load_balancer" {
+  source = "../../modules/load_balancer"
+  lb = var.lb 
+  environment = var.environment
+  vpc_id = module.vpc.vpc_id
+  public_subnet1 = module.vpc.public_subnet1
+  public_subnet2 = module.vpc.public_subnet2
+  public_subnet3 = module.vpc.public_subnet3
+}
 
 module "route53" {
   source = "../../modules/route53"
   route53 = var.route53
-  
+  lb_name =  module.load_balancer.lb_name
+  lb_zone_id = module.load_balancer.lb_zone_id
+  record_name = module.acm.record_name
+  record_type = module.acm.record_type
+  record_value = module.acm.record_value
+}
+
+module "acm" {
+  source = "../../modules/acm"
+  acm = var.acm
+  environment = var.environment
+  validation_record_fqdns = module.route53.validation_record_fqdns
+
 }

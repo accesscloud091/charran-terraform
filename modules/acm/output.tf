@@ -1,8 +1,17 @@
-resource "aws_acm_certificate" "cert" {
-  domain_name       = "example.com"
-  validation_method = "DNS"
+output "record_name" {
+  value = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_name
+  
+}
 
-  tags = {
-    environment = "prod"
-  }
+output "record_type" {
+  value =  tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_type
+  
+}
+
+output "record_value" {
+  value = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_value
+  
+}
+output "certificate_arn" {
+  value = aws_acm_certificate.cert.arn
 }

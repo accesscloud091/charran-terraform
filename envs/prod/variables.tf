@@ -10,6 +10,17 @@ variable "route53" {
   
 }
 
+variable "environment" {
+  
+}
+
+variable "acm" {
+  
+}
+
+# variable "validation_record_fqdns" {
+  
+# }
 # variable "task_definition_policy_name" {
 #     description = "name of ecs task definition role's policy"
 # }
@@ -24,6 +35,7 @@ variable "route53" {
   
 # }
 
-# variable "lb" {
+variable "lb" {
   
-# }
+}
+
