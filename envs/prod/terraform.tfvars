@@ -1,4 +1,5 @@
 environment = "prod"
+region = "us-east-1"
 
 
 vpc = {
@@ -39,20 +40,34 @@ ecr = {
     super_admin_name ="super-admin-prod"
     user_name = "user-prod"
 
+
 }
 
 ecs = {
     cluster_name = "ProdCluster"
     accounting_task_family = "accounting-prod-task-defination"
-    accounting_cpu = "1024"
+    cpu = "1024"
     memory = "2048"
     ecs_network_mode = "awsvpc"   
     desired_count = "1"
-    ecs.deployment_strategy = "ROLLING"
+    deployment_strategy = "ROLLING"
+
+    accounting_desired_count = 1
+    enable_ecs_managed_tags = true
+    enable_execute_command = true
+
+
+
+
+
+
+
+
    
    ####accounting task def
     accounting_container_name = "accounting" 
-    accounting_port_mapping_name  = "accounting-prod-port"
+    accounting_task_definition_revision = 93
+    # accounting_port_mapping_name  = "accounting-prod-port"
     logs_region   = "us-east-1"
     create_cloudwatch_group = true
     accounting_requires_capabilities = "FARGATE"
@@ -62,6 +77,7 @@ ecs = {
 
     #### accounting service
     accounting_ecs_service_name = 	"accounting-prod-service-8ia6ni4r"
+    network_mode = "awsvpc"
 
 
 
@@ -89,6 +105,14 @@ lb = {
     notification_port = 3003
     user_service_port = 3005
     gift_service_port = 3006
+   
+
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    proxy_protocol_v2 = null
+    lambda_multi_value_headers_enabled = null
+    enable_deletion_protection = true
+    idle_timeout = 120
 
 }
 
@@ -103,4 +127,10 @@ acm = {
 }
 
 
+secret = {
+    app_secrets_name = "opalink/prod/app-secreats"
+}
 
+accounting_cloudwatch_log_name = "/ecs/accounting-prod-task-defination"
+accounting_otel_sidecar_collector = "/ecs/ecs-aws-otel-sidecar-collector"
+accounting_otel_image_url = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"

@@ -1,0 +1,4 @@
+variable "secret" {
+    type = any
+  
+}

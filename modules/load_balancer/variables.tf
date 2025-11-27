@@ -25,3 +25,12 @@ variable "public_subnet3" {
     type = string
   
 }
+
+variable "certificate_arn" {
+    type = string
+  
+}
+variable "region" {
+    type = string
+  
+}

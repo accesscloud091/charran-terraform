@@ -1,5 +1,8 @@
 resource "aws_route53_zone" "zone" {
     name = var.route53.hosted_zone_name
+    force_destroy = null
+    comment = ""
+
 
 }
 
