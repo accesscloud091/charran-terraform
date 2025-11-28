@@ -6,6 +6,9 @@ variable "ecr" {
     description = "value of ecr"
 }
 
+variable "project_name" {
+  
+}
 variable "route53" {
   
 }
@@ -54,5 +57,12 @@ variable "accounting_otel_sidecar_collector" {
   
 }
 variable "accounting_otel_image_url" {
+  
+}
+
+variable "account_id" {
+  
+}
+variable "provider_type" {
   
 }

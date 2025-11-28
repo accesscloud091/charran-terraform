@@ -3,3 +3,9 @@ resource "aws_secretsmanager_secret" "app_secrets" {
   recovery_window_in_days = null
   force_overwrite_replica_secret = false
 }
+
+resource "aws_secretsmanager_secret" "accounting_secrets" {
+  name = "${var.project_name}/${var.environment}/accounting"
+  recovery_window_in_days = null
+  force_overwrite_replica_secret = false
+}

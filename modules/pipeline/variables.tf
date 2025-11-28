@@ -13,7 +13,7 @@ variable "environment" {
   
 }
 
-variable "app_secret_arn" {
+variable "accounting_secret_arn" {
     type = string
   
 }
@@ -21,3 +21,8 @@ variable "account_id" {
     type = string
   
 }
+
+variable "provider_type" {
+    type = string
+  
+} 

@@ -292,46 +292,46 @@ resource "aws_iam_role_policy" "EC2VpcAccess" {
 
 resource "aws_iam_role_policy_attachment" "accounting_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.accounting_policy.name
+  policy_arn = aws_iam_policy.accounting_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_accounting_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_accounting.name
+  policy_arn = aws_iam_policy.secret_manager_policy_accounting.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_authg_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_auth.name
+  policy_arn = aws_iam_policy.secret_manager_policy_auth.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_gift_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_gift.name
+  policy_arn = aws_iam_policy.secret_manager_policy_gift.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_mobile_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_mobile.name
+  policy_arn = aws_iam_policy.secret_manager_policy_mobile.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_notification_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_notification.name
+  policy_arn = aws_iam_policy.secret_manager_policy_notification.arn
 }
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_resturant_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_resturant.name
+  policy_arn = aws_iam_policy.secret_manager_policy_resturant.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_resturant_web_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_resturant_web.name
+  policy_arn = aws_iam_policy.secret_manager_policy_resturant_web.arn
 }
 
 resource "aws_iam_role_policy_attachment" "secret_manager_policy_user_attachment" {
   role = aws_iam_role.accounting_service_role.name
-  policy_arn = aws_iam_policy.secret_manager_policy_user.name
+  policy_arn = aws_iam_policy.secret_manager_policy_user.arn
 }
 # resource "aws_iam_role_policy" "secret_manager_policy" {
 #   name = var.task_definition_policy_name
@@ -350,7 +350,207 @@ resource "aws_iam_role_policy_attachment" "secret_manager_policy_user_attachment
 #   })
 # }
 
-resource "aws_iam_role_policy_attachment" "secret_manager_policy_user_attachment" {
+resource "aws_iam_role_policy_attachment" "secret_manager_user_attachment" {
   role = aws_iam_role.accounting_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+
+
+
+
+######################### accounting codepipeline service codepipeline ###################
+
+resource "aws_iam_role" "codepipeline_role" {
+  name = "AWSCodePipelineServiceRole-us-east-1-opalink-accounting-prod-pipeline"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "codepipeline.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# ----------------------------------------
+# Policy 1: S3 Access
+# ----------------------------------------
+resource "aws_iam_policy" "pipeline_s3_policy" {
+  name = "AWSCodePipelineServiceRole-us-east-1-opalink-accounting-prod-pipeline"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowS3BucketAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:GetBucketVersioning",
+          "s3:GetBucketAcl",
+          "s3:GetBucketLocation"
+        ]
+        Resource = [
+          "arn:aws:s3:::codepipeline-us-east-1-70012dd85603-407e-918b-b915aa801171"
+        ]
+        Condition = {
+          StringEquals = {
+            "aws:ResourceAccount" = "263427518575"
+          }
+        }
+      },
+      {
+        Sid    = "AllowS3ObjectAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:GetObject",
+          "s3:GetObjectVersion"
+        ]
+        Resource = [
+          "arn:aws:s3:::codepipeline-us-east-1-70012dd85603-407e-918b-b915aa801171/*"
+        ]
+        Condition = {
+          StringEquals = {
+            "aws:ResourceAccount" = "263427518575"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# ----------------------------------------
+# Policy 2: CodeBuild Access
+# ----------------------------------------
+resource "aws_iam_policy" "pipeline_codebuild_policy" {
+  name = "CodePipeline-CodeBuild-us-east-1-opalink-accounting-prod-pipeline"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild",
+        "codebuild:BatchGetBuildBatches",
+        "codebuild:StartBuildBatch"
+      ]
+      Resource = [
+        "arn:aws:codebuild:*:263427518575:project/opalink-prod-accounting-build"
+      ]
+    }]
+  })
+}
+
+# ----------------------------------------
+# Policy 3: CodeStar / CodeConnections
+# ----------------------------------------
+resource "aws_iam_policy" "pipeline_codestar_policy" {
+  name = "CodePipeline-CodeConnections-us-east-1-opalink-accounting-prod-pipeline"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "codeconnections:UseConnection",
+        "codestar-connections:UseConnection"
+      ]
+      Resource = [
+        "arn:aws:codestar-connections:*:263427518575:connection/57d4aa90-7e69-4249-b1ac-41a8cf6e6e42",
+        "arn:aws:codeconnections:*:263427518575:connection/57d4aa90-7e69-4249-b1ac-41a8cf6e6e42"
+      ]
+    }]
+  })
+}
+
+# ----------------------------------------
+# Policy 4: ECS Deployment Permissions
+# ----------------------------------------
+resource "aws_iam_policy" "pipeline_ecs_policy" {
+  name = "CodePipeline-ECSDeploy-us-east-1-opalink-accounting-prod-pipeline"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "TaskDefinitionPermissions"
+        Effect = "Allow"
+        Action = [
+          "ecs:DescribeTaskDefinition",
+          "ecs:RegisterTaskDefinition"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "ECSServicePermissions"
+        Effect = "Allow"
+        Action = [
+          "ecs:DescribeServices",
+          "ecs:UpdateService"
+        ]
+        Resource = [
+          "arn:aws:ecs:*:263427518575:service/ProdCluster/*"
+        ]
+      },
+      {
+        Sid    = "ECSTagResource"
+        Effect = "Allow"
+        Action = [
+          "ecs:TagResource"
+        ]
+        Resource = [
+          "arn:aws:ecs:*:263427518575:task-definition/arn:aws:ecs:us-east-1:263427518575:task-definition/accounting-prod-task-defination:9:*"
+        ]
+        Condition = {
+          StringEquals = {
+            "ecs:CreateAction" = ["RegisterTaskDefinition"]
+          }
+        }
+      },
+      {
+        Sid    = "IamPassRolePermissions"
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          "arn:aws:iam::263427518575:role/opalink-prod-ecs-task-defination-role"
+        ]
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = [
+              "ecs.amazonaws.com",
+              "ecs-tasks.amazonaws.com"
+            ]
+          }
+        }
+      }
+    ]
+  })
+}
+
+# ----------------------------------------
+# Attach all Policies to the Role
+# ----------------------------------------
+resource "aws_iam_role_policy_attachment" "attach_s3" {
+  role       = aws_iam_role.codepipeline_role.name
+  policy_arn = aws_iam_policy.pipeline_s3_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_codebuild" {
+  role       = aws_iam_role.codepipeline_role.name
+  policy_arn = aws_iam_policy.pipeline_codebuild_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_codestar" {
+  role       = aws_iam_role.codepipeline_role.name
+  policy_arn = aws_iam_policy.pipeline_codestar_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ecs" {
+  role       = aws_iam_role.codepipeline_role.name
+  policy_arn = aws_iam_policy.pipeline_ecs_policy.arn
 }

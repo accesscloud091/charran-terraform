@@ -13,12 +13,12 @@ module "ecs" {
   source = "../../modules/ecs"
   ecs = var.ecs
   environment = var.environment
-  accounting_service_image_arn = module.ecr.accounting_service_image_arn
+  accounting_service_image_arn = module.ecr.accounting_repository_arn
   accounting_cloudwatch_log_name = var.accounting_cloudwatch_log_name
   accounting_otel_sidecar_collector = var.accounting_otel_sidecar_collector
   app_secret_arn = module.secrets.app_secret_arn
   accounting_otel_image_url = var.accounting_otel_image_url
-  accounting_service_image_repository_url = module.ecr.accounting_service_image_repository_url
+  accounting_service_image_repository_url = module.ecr.accounting_repository_url
   task_definition_policy_name = var.task_definition_policy_name
   ecs_task_definition_role_name = var.ecs_task_definition_role_name
   load_balancer_sg_id = module.load_balancer.load_balancer_sg_id
@@ -65,5 +65,17 @@ module "acm" {
 module "secrets" {
   source = "../../modules/secrets"
   secret = var.secret
+  environment = var.environment
+  project_name = var.project_name
   
+}
+
+module "pipeline" {
+  source = "../../modules/pipeline"
+  account_id = var.account_id 
+  environment = var.environment
+  region = var.region
+  provider_type = var.provider_type
+  project_name = var.project_name
+  accounting_secret_arn = module.secrets.accounting_secret_arn
 }

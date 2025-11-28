@@ -1,5 +1,10 @@
 environment = "prod"
 region = "us-east-1"
+account_id = "263427518575"
+project_name = "opalink"
+
+
+provider_type = "GitHub"
 
 
 vpc = {
@@ -55,14 +60,6 @@ ecs = {
     accounting_desired_count = 1
     enable_ecs_managed_tags = true
     enable_execute_command = true
-
-
-
-
-
-
-
-
    
    ####accounting task def
     accounting_container_name = "accounting" 
@@ -78,9 +75,6 @@ ecs = {
     #### accounting service
     accounting_ecs_service_name = 	"accounting-prod-service-8ia6ni4r"
     network_mode = "awsvpc"
-
-
-
 }
 
 task_definition_policy_name = "opalink-prod-secret-manager-policy"
@@ -134,3 +128,4 @@ secret = {
 accounting_cloudwatch_log_name = "/ecs/accounting-prod-task-defination"
 accounting_otel_sidecar_collector = "/ecs/ecs-aws-otel-sidecar-collector"
 accounting_otel_image_url = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"
+
