@@ -51,35 +51,75 @@ ecr = {
 ecs = {
     cluster_name = "ProdCluster"
     accounting_task_family = "accounting-prod-task-defination"
-    cpu = "1024"
-    memory = "2048"
-    ecs_network_mode = "awsvpc"   
-    desired_count = "1"
+    cpu = 1024
+    memory = 2048
+    desired_count = 1
     deployment_strategy = "ROLLING"
-
-    accounting_desired_count = 1
     enable_ecs_managed_tags = true
     enable_execute_command = true
-   
-   ####accounting task def
-    accounting_container_name = "accounting" 
-    accounting_task_definition_revision = 93
-    # accounting_port_mapping_name  = "accounting-prod-port"
-    logs_region   = "us-east-1"
     create_cloudwatch_group = true
-    accounting_requires_capabilities = "FARGATE"
-    accounting_log_group_name = "/ecs/accounting-prod-task-defination"
-    accounting_otel_collector_container_name  = "aws-otel-collector"
-    accounting_otel_image_arn = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"
+    enable_fault_injection = false
+    network_mode = "awsvpc"
+
+   
+    logs_region   = "us-east-1"
+    
+    otel_collector_container_name  = "aws-otel-collector"
+    otel_collector_image_arn = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"
+    otel_collector_log_group_name = "/ecs/ecs-aws-otel-sidecar-collector"
+
 
     #### accounting service
-    accounting_ecs_service_name = 	"accounting-prod-service-8ia6ni4r"
-    network_mode = "awsvpc"
+    accounting_ecs_service_name = 	"accounting-prod-service-8ia6ni4r" 
+    accounting_requires_capabilities = "FARGATE"
+    accounting_log_group_name = "/ecs/accounting-prod-task-defination"
+    accounting_container_name = "accounting"
+    accounting_task_definition_revision = 93
+
+
+    ################auth
+    auth_container_name = "auth"
+    auth_task_definition_revision = 84
+
+    ################customer
+    customer_container_name =  "customer-support"
+
+    gift_container_name = "gift"
+    gift_enable_execute_command = false
+
+
+    ###################### kowlUI
+    kowlUI_otel_collector_image_arn = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.2" 
+    kowl_container_name = "kowl"
+
+
+    #####################mobile
+    mobile_container_name = "mobile"
+    mobile_enable_execute_command = false
+
+    ################### notification
+    notification_container_name = "notification"
+    notification_enable_execute_command = true
+
+
+    ########################  nginx
+    nginx_container_name = "nginx"
+
+    ####################### restaurant
+    restaurant_container_name = "restaurant"
+
+
+
+
+
+
+
+
 }
 
 task_definition_policy_name = "opalink-prod-secret-manager-policy"
 
-ecs_task_definition_role_name = "opalink-prod-ecs-task-defination-role"
+# ecs_task_definition_role_name = "opalink-prod-ecs-task-defination-role"
 
 lb = {
     name = "opalink-prod-load-balancer"
@@ -129,3 +169,15 @@ accounting_cloudwatch_log_name = "/ecs/accounting-prod-task-defination"
 accounting_otel_sidecar_collector = "/ecs/ecs-aws-otel-sidecar-collector"
 accounting_otel_image_url = "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3"
 
+service_role_path = "/service-role/"
+
+
+pipeline = {
+    codepipeline_type = "V2"
+    build_timeout = 60
+    execution_mode = "QUEUED"
+    pipeline_action_mode  = "REPLACE_ON_FAILURE"
+
+
+
+}

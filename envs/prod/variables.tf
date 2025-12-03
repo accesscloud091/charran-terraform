@@ -37,9 +37,9 @@ variable "ecs" {
 # variable "ecs_task_definition_role" {
   
 # }
-variable "ecs_task_definition_role_name" {
+# variable "ecs_task_definition_role_name" {
   
-}
+# }
 
 variable "lb" {
   
@@ -64,5 +64,13 @@ variable "account_id" {
   
 }
 variable "provider_type" {
+  
+}
+
+variable "service_role_path" {
+  
+}
+
+variable "pipeline" {
   
 }

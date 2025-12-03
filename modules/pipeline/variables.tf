@@ -26,3 +26,12 @@ variable "provider_type" {
     type = string
   
 } 
+
+variable "service_role_path" {
+    type = string
+  
+}
+variable "pipeline" {
+    type = any
+  
+}

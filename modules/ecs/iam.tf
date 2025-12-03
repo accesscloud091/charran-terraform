@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_task_definition_role" {
-  name = var.ecs_task_definition_role_name
+  name = "${var.project_name}-${var.environment}-ecs-task-defination-role"
   description = "Allows ECS tasks to call AWS services on your behalf."
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -56,6 +56,45 @@ resource "aws_iam_role_policy" "secret_manager_policy" {
 }
 
 
+#######################role for kowl
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "opatab-ecs-task-execution-role-production"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+
+  
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role = aws_iam_role.ecs_task_execution_role.name
+  policy_arn =  "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 resource "aws_security_group" "accounting_service_sg" {
   name        = "accounting-${var.environment}-sg"
 
@@ -85,26 +124,146 @@ resource "aws_security_group" "accounting_service_sg" {
   # revoke_rules_on_delete = null
 }
 
+resource "aws_security_group" "auth_service_sg" {
+  name        = "auth-${var.environment}-sg"
+
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+}
+
+resource "aws_security_group" "customer_support_service_sg" {
+  name        = "customer-support-${var.environment}-tg"
+
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3002
+    to_port     = 3002
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "gift_service_sg" {
+  name        = "gift-production-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3006
+    to_port     = 3006
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "mobile_service_sg" {
+  name        = "mobile-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 6001
+    to_port     = 6001
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "notifcation_service_sg" {
+  name        = "${var.environment}-notification-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3003
+    to_port     = 3003
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
 
 
-# resource "aws_iam_role_policy_attachment" "secret_manager_policy_attachment" {
-#   role = aws_iam_role.ecs_task_definition_role.arn
-#   policy_arn = aws_iam_policy.secret_manager_policy.arn
-# }
+resource "aws_security_group" "nginx_service_sg" {
+  name        = "ecs-nginx-service"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
 
 
 
-
-
-# ######## cloudwatch log group
-
-# resource "aws_cloudwatch_log_group" "ecs_accounting_task_definition" {
-#   name              = var.ecs.accounting_log_group_name
-#   # retention_in_days = 30
-# }
-
-# resource "aws_cloudwatch_log_group" "accounting_otel_sidecar_collector" {
-#   name              = var.ecs.accounting_otel_sidecar_collector_name
-#   # retention_in_days = 30
-# }
 

@@ -1,27 +1,13 @@
 resource "aws_codepipeline" "accounting_codepipeline" {
   name            = "${var.project_name}-accounting-${var.environment}-pipeline"
-  pipeline_type   = "V2"
-  execution_mode  = "QUEUED"
+  pipeline_type   =  var.pipeline.codepipeline_type                       
+  execution_mode  = var.pipeline.execution_mode
   role_arn        = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
     location = aws_s3_bucket.s3_bucket_accounting_codepipeline.bucket
     type     = "S3"
   }
-
-  # -------------------------
-  # GIT SOURCE CONFIGURATION
-  # -------------------------
-#   git_configuration {
-#     source_action_name = "Source"
-#     provider_type      = "CodeStarSourceConnection"
-
-#     push {
-#       branches {
-#         includes = ["feature/main"]
-#       }
-#     }
-#   }
 
   # -------------------------
   # STAGE 1: SOURCE
@@ -64,13 +50,13 @@ resource "aws_codepipeline" "accounting_codepipeline" {
       output_artifacts = ["BuildOutput"]
 
       configuration = {
-        ProjectName = aws_codebuild_project.project_with_cache.name
+        ProjectName = aws_codebuild_project.accounting.name
       }
     }
   }
 
   # -------------------------
-  # STAGE 3: DEPLOY (CloudFormation)
+  # STAGE 3: DEPLOY
   # -------------------------
   stage {
     name = "Deploy"
@@ -85,7 +71,7 @@ resource "aws_codepipeline" "accounting_codepipeline" {
       input_artifacts = ["BuildOutput"]
 
       configuration = {
-        ActionMode     = "REPLACE_ON_FAILURE"
+        ActionMode     =  var.pipeline.pipeline_action_mode            
         Capabilities   = "CAPABILITY_IAM"
         StackName      = "OpalinkAccounting"
         TemplatePath   = "BuildOutput::sam-templated.yaml"

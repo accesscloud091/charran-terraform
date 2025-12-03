@@ -6,6 +6,16 @@ variable "environment" {
     type = string
   
 }
+
+variable "region" {
+    type = string
+  
+}
+
+variable "project_name" {
+    type = string
+  
+}
 variable "accounting_service_image_arn" {
     type = string
   
@@ -45,10 +55,10 @@ variable "task_definition_policy_name" {
 # }
 
 
-variable "ecs_task_definition_role_name" {
-    type = string
+# variable "ecs_task_definition_role_name" {
+#     type = string
   
-}
+# }
 
 variable "private_subnet1" {
     type = string
@@ -73,6 +83,39 @@ variable "vpc_id" {
 }
 
 variable "accounting_target_group_arn" {
+    type = string
+  
+}
+
+variable "accounting_repository_url" {
+    type = string
+  
+}
+
+variable "auth_target_group_arn" {
+    type = string
+  
+}
+
+variable "customer_support_target_group_arn" {
+    type = string
+  
+}
+
+variable "gift_target_group_arn" {
+    type = string
+  
+}
+
+variable "mobile_target_group_arn" {
+    type = string
+  
+}
+variable "notification_target_group_arn" {
+    type = string
+  
+}
+variable "nginx_target_group_arn" {
     type = string
   
 }

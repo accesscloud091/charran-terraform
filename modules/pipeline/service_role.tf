@@ -1,6 +1,6 @@
 resource "aws_iam_role" "accounting_service_role" {
   name = "codebuild-${var.project_name}-${var.environment}-accounting-build-service-role"
-  description = "Allows ECS tasks to call AWS services on your behalf."
+  path = var.service_role_path
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -14,7 +14,9 @@ resource "aws_iam_role" "accounting_service_role" {
 }
 
 resource "aws_iam_policy" "accounting_policy" {
-  name = "CodeBuildBasePolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildBasePolicy-${var.project_name}-${var.environment}-accounting-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild" 
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -92,9 +94,7 @@ resource "aws_iam_policy" "accounting_policy" {
             "ecr:GetAuthorizationToken"
         ]
         Effect   = "Allow"
-        Resource = [
-                "*"
-        ]
+        Resource = "*"
          },
          
           {
@@ -130,7 +130,11 @@ resource "aws_iam_policy" "accounting_policy" {
   }
 
 resource "aws_iam_policy" "secret_manager_policy_accounting" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild" 
+  path = var.service_role_path
+  tags = {}
+
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -139,7 +143,9 @@ resource "aws_iam_policy" "secret_manager_policy_accounting" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+        Resource = [
+           "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+        ]
       
       }
     ]
@@ -147,7 +153,10 @@ resource "aws_iam_policy" "secret_manager_policy_accounting" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_auth" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-auth-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
+  tags = {}
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -164,7 +173,9 @@ resource "aws_iam_policy" "secret_manager_policy_auth" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_gift" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-gift-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -173,7 +184,9 @@ resource "aws_iam_policy" "secret_manager_policy_gift" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-       Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       Resource = [
+         "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       ]
         
       }
     ]
@@ -181,7 +194,9 @@ resource "aws_iam_policy" "secret_manager_policy_gift" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_mobile" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-mobile-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -190,7 +205,9 @@ resource "aws_iam_policy" "secret_manager_policy_mobile" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-       Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       Resource = [
+         "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       ]
         
       }
     ]
@@ -198,7 +215,9 @@ resource "aws_iam_policy" "secret_manager_policy_mobile" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_notification" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-notification-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -207,7 +226,9 @@ resource "aws_iam_policy" "secret_manager_policy_notification" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-       Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       Resource = [
+         "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       ]
         
       }
     ]
@@ -215,7 +236,9 @@ resource "aws_iam_policy" "secret_manager_policy_notification" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_resturant" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-resturant-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -224,7 +247,9 @@ resource "aws_iam_policy" "secret_manager_policy_resturant" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-       Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       Resource = [
+         "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       ]
         
       }
     ]
@@ -232,7 +257,9 @@ resource "aws_iam_policy" "secret_manager_policy_resturant" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_resturant_web" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-resturant-web-app-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -241,7 +268,9 @@ resource "aws_iam_policy" "secret_manager_policy_resturant_web" {
           "secretsmanager:GetSecretValue"
         ]
         Effect   = "Allow"
-       Resource = "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       Resource = [
+        "arn:aws:secretsmanager:${var.region}:${var.account_id}:secret:/CodeBuild/*"
+       ]
         
       }
     ]
@@ -249,7 +278,9 @@ resource "aws_iam_policy" "secret_manager_policy_resturant_web" {
 }
 
 resource "aws_iam_policy" "secret_manager_policy_user" {
-  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-accounting-${var.region}"
+  name = "CodeBuildSecretsManagerPolicy-${var.project_name}-${var.environment}-user-build-${var.region}"
+  description = "Policy used in trust relationship with CodeBuild"
+  path = var.service_role_path
   policy = jsonencode({  
     Version = "2012-10-17"
     Statement = [
@@ -272,6 +303,7 @@ resource "aws_iam_role_policy" "EC2VpcAccess" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid = "Statement1",
         Action = [
                 "ec2:CreateNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
@@ -283,7 +315,7 @@ resource "aws_iam_role_policy" "EC2VpcAccess" {
                 "ec2:CreateNetworkInterfacePermission"
         ]
         Effect   = "Allow"
-       Resource = "*"
+        Resource = "*"
         
       }
     ]
@@ -300,7 +332,7 @@ resource "aws_iam_role_policy_attachment" "secret_manager_policy_accounting_atta
   policy_arn = aws_iam_policy.secret_manager_policy_accounting.arn
 }
 
-resource "aws_iam_role_policy_attachment" "secret_manager_policy_authg_attachment" {
+resource "aws_iam_role_policy_attachment" "secret_manager_policy_auth_attachment" {
   role = aws_iam_role.accounting_service_role.name
   policy_arn = aws_iam_policy.secret_manager_policy_auth.arn
 }
@@ -350,7 +382,7 @@ resource "aws_iam_role_policy_attachment" "secret_manager_policy_user_attachment
 #   })
 # }
 
-resource "aws_iam_role_policy_attachment" "secret_manager_user_attachment" {
+resource "aws_iam_role_policy_attachment" "secret_manager_read_write_attachment" {
   role = aws_iam_role.accounting_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
@@ -361,7 +393,7 @@ resource "aws_iam_role_policy_attachment" "secret_manager_user_attachment" {
 ######################### accounting codepipeline service codepipeline ###################
 
 resource "aws_iam_role" "codepipeline_role" {
-  name = "AWSCodePipelineServiceRole-us-east-1-opalink-accounting-prod-pipeline"
+  name = "AWSCodePipelineServiceRole-${var.region}-${var.project_name}-accounting-${var.environment}-pipeline"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -379,7 +411,10 @@ resource "aws_iam_role" "codepipeline_role" {
 # Policy 1: S3 Access
 # ----------------------------------------
 resource "aws_iam_policy" "pipeline_s3_policy" {
-  name = "AWSCodePipelineServiceRole-us-east-1-opalink-accounting-prod-pipeline"
+  name = "AWSCodePipelineServiceRole-${var.region}-${var.project_name}-accounting-${var.environment}-pipeline"
+  description      = "Policy used in trust relationship with CodePipeline for service role"
+  path = var.service_role_path
+
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -426,8 +461,10 @@ resource "aws_iam_policy" "pipeline_s3_policy" {
 # ----------------------------------------
 # Policy 2: CodeBuild Access
 # ----------------------------------------
-resource "aws_iam_policy" "pipeline_codebuild_policy" {
-  name = "CodePipeline-CodeBuild-us-east-1-opalink-accounting-prod-pipeline"
+resource "aws_iam_policy" "accounting_codebuild_pipeline_policy" {
+  name = "CodePipeline-CodeBuild-${var.region}-${var.project_name}-accounting-${var.environment}-pipeline"
+  description      = "Policy used in trust relationship with CodePipeline for CodeBuild Action"
+  path = var.service_role_path
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -450,7 +487,9 @@ resource "aws_iam_policy" "pipeline_codebuild_policy" {
 # Policy 3: CodeStar / CodeConnections
 # ----------------------------------------
 resource "aws_iam_policy" "pipeline_codestar_policy" {
-  name = "CodePipeline-CodeConnections-us-east-1-opalink-accounting-prod-pipeline"
+  name = "CodePipeline-CodeConnections-${var.region}-${var.project_name}-accounting-${var.environment}-pipeline"
+  description  = "Policy used in trust relationship with CodePipeline for CodeConnections Action"
+  path = var.service_role_path
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -473,6 +512,8 @@ resource "aws_iam_policy" "pipeline_codestar_policy" {
 # ----------------------------------------
 resource "aws_iam_policy" "pipeline_ecs_policy" {
   name = "CodePipeline-ECSDeploy-us-east-1-opalink-accounting-prod-pipeline"
+  description = "Policy used in trust relationship with CodePipeline for ECS Action"
+  path = var.service_role_path
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -484,7 +525,9 @@ resource "aws_iam_policy" "pipeline_ecs_policy" {
           "ecs:DescribeTaskDefinition",
           "ecs:RegisterTaskDefinition"
         ]
-        Resource = "*"
+        Resource = [ 
+          "*"
+        ]
       },
       {
         Sid    = "ECSServicePermissions"
@@ -542,7 +585,7 @@ resource "aws_iam_role_policy_attachment" "attach_s3" {
 
 resource "aws_iam_role_policy_attachment" "attach_codebuild" {
   role       = aws_iam_role.codepipeline_role.name
-  policy_arn = aws_iam_policy.pipeline_codebuild_policy.arn
+  policy_arn = aws_iam_policy.accounting_codebuild_pipeline_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "attach_codestar" {

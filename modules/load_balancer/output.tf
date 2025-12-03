@@ -18,3 +18,33 @@ output "accounting_target_group_arn" {
     value = aws_lb_target_group.accounting_service.arn
   
 }
+
+output "auth_target_group_arn" {
+    value = aws_lb_target_group.auth_service.arn
+  
+}
+
+output "customer_support_target_group_arn" {
+    value = aws_lb_target_group.customer_support.arn
+  
+}
+
+output "gift_target_group_arn" {
+    value = aws_lb_target_group.gift_service.arn
+  
+}
+
+output "mobile_target_group_arn" {
+    value = aws_lb_target_group.mobile_service.arn
+  
+}
+
+output "notification_target_group_arn" {
+    value = aws_lb_target_group.notification.arn
+  
+}
+
+output "nginx_target_group_arn" {
+    value = aws_lb_target_group.nginx_service.arn
+  
+}

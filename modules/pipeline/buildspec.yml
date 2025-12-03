@@ -4,20 +4,20 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${var.account_id}.dkr.ecr.us-east-1.amazonaws.com
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 263427518575.dkr.ecr.us-east-1.amazonaws.com
 
   build:
     commands:
       - echo Build started on date
       - echo Building the Docker image...
-      - docker build --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --build-arg AWS_DEFAULT_REGION=${var.region} -t accounting-prod .
+      - docker build --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --build-arg AWS_DEFAULT_REGION=us-east-1 -t accounting-prod .
       - docker tag accounting-prod:latest 263427518575.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:latest
 
   post_build:
     commands:
       - echo Build completed on date
       - echo Pushing the Docker image...
-      - docker push ${var.account_id}.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:latest
+      - docker push 263427518575.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:latest
       - echo Writing imagedefinitions.json file...
       - printf '[{"name":"accounting","imageUri":"263427518575.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:latest"}]' > imagedefinitions.json
 
