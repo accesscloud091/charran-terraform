@@ -2,6 +2,10 @@ variable "lb" {
     type = any
   
 }
+variable "kowl_lb" {
+    type = any
+  
+}
 
 variable "environment" {
     type = string
@@ -31,6 +35,22 @@ variable "certificate_arn" {
   
 }
 variable "region" {
+    type = string
+  
+}
+variable "project_name" {
+    type = string
+  
+}
+variable "private_subnet1" {
+    type = string
+  
+}
+variable "private_subnet2" {
+    type = string
+  
+}
+variable "private_subnet6" {
     type = string
   
 }

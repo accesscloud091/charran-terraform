@@ -756,7 +756,6 @@ resource "aws_lb_listener_rule" "notification_nginx_service_rule" {
 
   action {
     type             = "forward"
-    # target_group_arn = aws_lb_target_group.nginx_service.arn
     forward {
     target_group {
       arn = aws_lb_target_group.nginx_service.arn
@@ -853,63 +852,6 @@ resource "aws_lb_listener_rule" "restaurant_nginx_service_rule" {
   }
 }
 
-# resource "aws_lb_listener_rule" "user_nginx_service_rule" {
-#   listener_arn = aws_lb_listener.lb_https.arn
-#   priority     = 10
-
-#   action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.nginx_service.arn
-  
-#     forward {
-#     target_group {
-#       arn = aws_lb_target_group.nginx_service.arn
-#       weight = 1
-#     }
-#     stickiness {
-#       duration = 3600
-#       enabled = false
-#     }
-#   }
-#   }
-
-#   condition {
-#     path_pattern {
-#       values = ["/user/*"]
-#     }
-#   }
-# }
-
-# resource "aws_lb_listener_rule" "user_nginx_service_rule" {
-#   listener_arn = aws_lb_listener.lb_https.arn
-#   priority     = 10
-
-#   action {
-#     forward {
-#       stickiness {
-#         duration = 3600
-#         enabled = false
-#       }
-#     }
-
-#       target_group {
-#         arn = aws_lb_target_group.nginx_service.arn
-#         weight = 1
-#     }
-#     } 
-#       type = forward
-#       target_group_arn = aws_lb_target_group.nginx_service.arn
-#       weight = 1
-
-
-  
-#   condition {
-#     path_pattern {
-#       values = ["/user/*"]
-#     }
-#   }
-# }
-
 resource "aws_lb_listener_rule" "user_nginx_service_rule" {
   listener_arn = aws_lb_listener.lb_https.arn
   priority     = 10
@@ -963,6 +905,170 @@ resource "aws_lb_listener_rule" "accounting_nginx_service_rule" {
   condition {
     path_pattern {
       values = ["/accounting/*"]
+    }
+  }
+}
+
+#######################################sg
+
+resource "aws_security_group" "kowl_lb_sg" {
+  name        = var.kowl_lb.sg_name
+
+  description = var.kowl_lb.sg_description
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  
+
+  revoke_rules_on_delete = null
+}
+
+
+############################################kowlUI lb
+resource "aws_lb" "kowlUI" {
+  name               = var.kowl_lb.name
+  load_balancer_type = var.kowl_lb.type  
+  internal           = var.kowl_lb.internal
+  ip_address_type    = var.kowl_lb.ip_address_type
+  security_groups    = [aws_security_group.kowl_lb_sg.id]
+  enable_deletion_protection =  var.kowl_lb.enable_deletion_protection
+  idle_timeout = var.kowl_lb.idle_timeout
+  # access_logs {
+  #   enabled = true
+  #   bucket = var.s3_lb_access_logs
+    
+
+  # }
+  # connection_logs {
+  #   enabled = var.kowl_lb.enable_connection_logs
+  # }
+  subnets = [
+    var.private_subnet1,
+    var.private_subnet2,
+    var.private_subnet6
+  ]
+}
+
+
+############################################
+# TARGET GROUPS 
+############################################
+resource "aws_lb_target_group" "kowlUI_target_group" {
+  name        = "${var.project_name}-${var.environment}-kowlUI-targetg"
+  port        = var.kowl_lb.tg_port
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+  lambda_multi_value_headers_enabled  = var.lb.lambda_multi_value_headers_enabled
+  proxy_protocol_v2 = var.lb.proxy_protocol_v2
+
+  health_check {
+    protocol = "HTTP"
+    path     = "/"
+    port = var.kowl_lb.health_check_port
+    healthy_threshold = var.lb.healthy_threshold
+    unhealthy_threshold = var.lb.unhealthy_threshold
+  }
+  stickiness {
+    cookie_duration = var.kowl_lb.cookie_duration
+    enabled = var.kowl_lb.stickiness_enabled
+    type = var.kowl_lb.stickiness_type
+  }
+  target_group_health {
+    dns_failover {
+        minimum_healthy_targets_count = "1"
+        minimum_healthy_targets_percentage = "off"
+      
+     
+  }
+    unhealthy_state_routing {
+      minimum_healthy_targets_count = "1"
+        minimum_healthy_targets_percentage = "off"
+      
+    }
+     
+      # dns_failover {
+      #   minimum_healthy_targets_count = "1"
+      #   minimum_healthy_targets_percentage = "off"
+      
+     
+  }
+}
+
+
+############################################
+# HTTP LISTENERS 
+############################################
+
+resource "aws_lb_listener" "kowlUI_listener" {
+  load_balancer_arn = aws_lb.lb.arn
+  port              = 443
+  protocol          = "HTTP"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-Res-2021-06"
+  certificate_arn   = var.certificate_arn
+
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.super_admin.arn
+    forward {
+      stickiness {
+        duration = 3600
+        enabled = false
+      }
+
+      target_group {
+        arn = aws_lb_target_group.super_admin.arn
+        weight = 1
+      }
+    }
+       
+      }
+}
+
+resource "aws_lb_listener_rule" "kowlUI_listener_rule" {
+  listener_arn = aws_lb_listener.lb_https.arn
+  priority     = 3
+
+  action {
+    type             = "forward"
+    # target_group_arn = aws_lb_target_group.nginx_service.arn
+    forward {
+    target_group {
+      arn = aws_lb_target_group.nginx_service.arn
+    }
+    stickiness {
+      duration = 3600
+      enabled = false
+    }
+  }
+  }
+
+
+  condition {
+    path_pattern {
+      values = ["/restaurant-web/*"]
     }
   }
 }

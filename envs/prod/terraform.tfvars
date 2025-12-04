@@ -108,6 +108,20 @@ ecs = {
     ####################### restaurant
     restaurant_container_name = "restaurant"
 
+    ####################### restaurant-web
+    restaurant_web_container_name = "restaurant-web"
+    restaurant_web_enable_execute_command = false
+
+    ####################### restaurant
+    super_admin_container_name = "super-admin"
+
+    ####################### restaurant
+    user_service_container_name = "3005"
+    user_service_enable_execute_command = true
+
+
+
+
 
 
 
@@ -150,14 +164,40 @@ lb = {
 
 }
 
+kowl_lb = {
+    name = "Opalink-prod-KowlUI-LB"
+    type  = "application"
+    ip_address_type  = "ipv4"
+    enable_deletion_protection = false
+    connection_logs = true
+    idle_timeout = 60
+    internal = true
+    cookie_duration = 86400
+    stickiness_enabled = false
+    stickiness_type = "lb_cookie" 
+
+
+    tg_port = 8080
+    health_check_port = "traffic-port"
+
+    sg_name = "kowl-alb-sg"
+    sg_description = "kowl-alb-sg"
+
+
+
+
+}
 route53 = {
     hosted_zone_name = "opalinkapp.com"
     record_type = "A"
+
+    
 
 }
 
 acm = {
     domain_name = "api.opalinkapp.com"
+    kowl_domain_name = "kowl.opalinkapp.com"
 }
 
 

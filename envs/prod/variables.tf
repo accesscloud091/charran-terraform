@@ -45,6 +45,9 @@ variable "lb" {
   
 }
 
+variable "kowl_lb" {
+  
+}
 variable "secret" {
   
 }

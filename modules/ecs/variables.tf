@@ -119,3 +119,33 @@ variable "nginx_target_group_arn" {
     type = string
   
 }
+
+variable "restaurant_target_group_arn" {
+    type = string
+  
+}
+variable "private_subnet4" {
+    type = string
+  
+}
+variable "private_subnet5" {
+    type = string
+  
+}
+
+variable "private_subnet6" {
+    type = string
+  
+}
+variable "restaurant_web_target_group_arn" {
+    type = string
+  
+}
+variable "super_admin_target_group_arn" {
+    type = string
+  
+}
+variable "user_service_target_group_arn" {
+    type = string
+  
+}

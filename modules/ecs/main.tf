@@ -445,7 +445,7 @@ resource "aws_ecs_task_definition" "gift_task_defination" {
 
     {
       name      = var.ecs.gift_container_name
-      image     = "263427518575.dkr.ecr.us-east-1.amazonaws.com/gift-prod:ca7a6ee-20251009-155657"
+      image     = "263427518575.dkr.ecr.us-east-1.amazonaws.com/gift-prod:4670cef-20251203-192353"
       essential = true
       cpu       = var.ecs.cpu
       memory    = var.ecs.memory
@@ -542,6 +542,7 @@ resource "aws_ecs_task_definition" "kowlUI_task_defination" {
   memory                   = var.ecs.memory
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  
 
   runtime_platform {
     cpu_architecture        = "X86_64"
@@ -549,109 +550,109 @@ resource "aws_ecs_task_definition" "kowlUI_task_defination" {
   }
 
   container_definitions = jsonencode([
-
-    # ------------------------------
-    # 1. AWS OTEL SIDE CAR
-    # ------------------------------
-    {
-      name      = "aws-otel-collector"
-      essential = true
-      image     = var.ecs.kowlUI_otel_collector_image_arn
-
-      command = ["--config=/etc/ecs/ecs-cloudwatch.yaml"]
-
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/ecs-aws-otel-sidecar-collector"
-          awslogs-region        = "us-east-1"
-          awslogs-stream-prefix = "ecs"
-        }
+  {
+    command          = [
+     "--config=/etc/ecs/ecs-cloudwatch.yaml",
+                    ]
+    name      = var.ecs.otel_collector_container_name
+    image     = var.ecs.kowlUI_otel_collector_image_arn
+    logConfiguration = {
+      logDriver     = "awslogs"
+      secretOptions = []
+      options = {
+        awslogs-group         = var.ecs.otel_collector_log_group_name
+        awslogs-create-group  = "true"
+        awslogs-region        = var.region
+        awslogs-stream-prefix = "ecs"
+        max-buffer-size       = "25m"
+        mode                  = "non-blocking"
       }
-    },
-
-    # ------------------------------
-    # 2. Redpanda Console (UI)
-    # ------------------------------
-    {
-      name      = "console"
-      essential = true
-      cpu       = var.ecs.cpu
-      image     = "redpandadata/console:latest"
-
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/kowlUI-task-defination-${var.project_name}-${var.environment}"
-          awslogs-region        = "us-east-1"
-          awslogs-stream-prefix = "ecs"
-        }
-      }
-    },
-
-    # ------------------------------
-    # 3. Kowl Backend
-    # ------------------------------
-    {
-      name   = "kowl"
-      memory = var.ecs.memory
-
-      portMappings = [
-        {
-          appProtocol   = "http"
-          containerPort = 8080
-          hostPort      = 8080
-          protocol      = "tcp"
-          name          = "kowl-port"
-        }
-      ]
-
-      environment = [
-        {
-          name  = "KAFKA_BROKERS"
-          value = "b-3.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096,b-2.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096,b-1.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096"
-        },
-        {
-          name  = "KAFKA_SASL_ENABLED"
-          value = "true"
-        },
-        {
-          name  = "KAFKA_SASL_MECHANISM"
-          value = "SCRAM-SHA-512"
-        },
-        {
-          name  = "KAFKA_SASL_PASSWORD"
-          value = "sdas24324@"
-        },
-        {
-          name  = "KAFKA_SASL_USERNAME"
-          value = "admin"
-        },
-        {
-          name = "KAFKA_TLS_ENABLED"
-          value = "true"
-        }
-      ]
     }
+    essential = true
 
-  ])
+    environment   = []
+    mountPoints   = []
+    systemControls = []
+    volumesFrom   = []
+    portMappings = []
 
-  enable_fault_injection = false
-  skip_destroy           = false
-  tags                   = {}
-  tags_all               = {}
+    # portMappings = [
+    #   {
+    #     appProtocol   = "http"
+    #     containerPort = 3005
+    #     hostPort      = 3005
+    #     name          = "user-${var.environment}-port"
+    #     protocol      = "tcp"
+    #   }
+    # ]
+
+    
+  },
+
+  {
+    
+    environment = [
+      
+      { 
+         name = "KAFKA_BROKERS"
+         value = "b-3.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096,b-2.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096,b-1.opalinkproductionmskcl.mptzy4.c1.kafka.us-east-1.amazonaws.com:9096" 
+       },
+      { name  = "KAFKA_SASL_ENABLED", value = "true" },
+      { name  = "KAFKA_SASL_MECHANISM", value = "SCRAM-SHA-512" },
+      { name  = "KAFKA_SASL_PASSWORD",  value = "sdas24324@" },
+      { name  = "KAFKA_SASL_USERNAME", value = "admin" },
+      { name  = "KAFKA_TLS_ENABLED",    value = "true"  },
+
+    ]
+    
+    environmentFiles = []
+    cpu = var.ecs.cpu
+    memory = var.ecs.memory
+    essential = true
+    image     = "redpandadata/console:latest"
+    
+        
+    logConfiguration = {
+      logDriver = "awslogs"
+      secretOptions = []
+      memory = var.ecs.memory
+      options = {
+        awslogs-create-group = "true"
+        awslogs-group        = "/ecs/kowlUI-task-defination-${var.project_name}-${var.environment}"
+        awslogs-region       = var.region
+        awslogs-stream-prefix = "ecs"
+        max-buffer-size      = "25m"
+        mode                 = "non-blocking"
+      }
+    }
+    portMappings = [
+      {
+        appProtocol = "http"
+        containerPort = 8080
+        hostPort = 8080
+        name =  "kowl-port"
+        protocol = "tcp"
+      }
+    ]
+    ulimits = []
+
+    mountPoints     = []
+    name            = var.ecs.kowl_container_name
+    
+    systemControls  = []
+    volumesFrom     = []
+  }
+])
 }
 
 
 
-resource "aws_ecs_service" "kowlUI_service" {
-  name = "gift-${var.environment}-service"
+resource "aws_ecs_service" "kowl_service" {
+  name = "kowlUI-${var.environment}-service"
   desired_count = var.ecs.desired_count
   enable_ecs_managed_tags = var.ecs.enable_ecs_managed_tags
   enable_execute_command  = var.ecs.gift_enable_execute_command
-  task_definition = "${aws_ecs_task_definition.gift_task_defination.family}:${aws_ecs_task_definition.gift_task_defination.revision}"
+  task_definition = "${aws_ecs_task_definition.kowlUI_task_defination.family}:${aws_ecs_task_definition.kowlUI_task_defination.revision}"
 
 
   wait_for_steady_state  = null
@@ -681,11 +682,11 @@ resource "aws_ecs_service" "kowlUI_service" {
     rollback = true
   }
 
-  load_balancer {
-    container_name = var.ecs.gift_container_name
-    container_port = 3006
-    target_group_arn = var.gift_target_group_arn
-  }
+  # load_balancer {
+  #   container_name = var.ecs.kowl_container_name
+  #   container_port = 8080
+  #   target_group_arn = var.kowl_target_group_arn
+  # }
 
   network_configuration {
     assign_public_ip = true
@@ -1167,12 +1168,12 @@ resource "aws_ecs_task_definition" "restaurant_task_defination" {
 
 
 resource "aws_ecs_service" "restaurant_service" {
-  name = "${var.project_name}-${var.environment}-nginx-service"
+  name = "restaurant-${var.environment}-service"
   desired_count = var.ecs.desired_count
   enable_ecs_managed_tags = var.ecs.enable_ecs_managed_tags
   enable_execute_command  = var.ecs.notification_enable_execute_command
   health_check_grace_period_seconds = 0
-  task_definition = "${aws_ecs_task_definition.nginx_task_defination.family}:${aws_ecs_task_definition.nginx_task_defination.revision}"
+  task_definition = "${aws_ecs_task_definition.restaurant_task_defination.family}:${aws_ecs_task_definition.restaurant_task_defination.revision}"
   propagate_tags = "NONE"
   
   tags = {}
@@ -1203,14 +1204,441 @@ resource "aws_ecs_service" "restaurant_service" {
   }
 
   load_balancer {
-    container_name = var.ecs.nginx_container_name
-    container_port = 80
-    target_group_arn = var.nginx_target_group_arn
+    container_name = var.ecs.restaurant_container_name
+    container_port = 3004
+    target_group_arn = var.restaurant_target_group_arn
   }
 
   network_configuration {
     assign_public_ip = true
-    security_groups = [ aws_security_group.nginx_service_sg.id ]
+    security_groups = [ aws_security_group.restaurant_service_sg.id ]
+    subnets = [
+      var.private_subnet4,
+      var.private_subnet5,
+      var.private_subnet6
+    ]
+}
+}
+
+########################################## restaurant web
+
+resource "aws_ecs_task_definition" "restaurant_web_task_defination" {
+  family                   = "restaurant-web-${var.environment}-task-defination"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.ecs.cpu
+  memory                   = var.ecs.memory
+  task_role_arn            = aws_iam_role.ecs_task_definition_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_definition_role.arn
+  
+
+  runtime_platform {
+    cpu_architecture        = "X86_64"
+    operating_system_family = "LINUX"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = var.ecs.otel_collector_container_name
+      image     = var.ecs.otel_collector_image_arn
+      essential = true
+      
+      command   = [
+        "--config=/etc/ecs/ecs-cloudwatch.yaml"
+        ]
+      environment = []
+      mountPoints = []
+      portMappings = []
+      systemControls = []
+      volumesFrom = []
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        secretOptions = []
+        options = {
+          awslogs-group         = "/ecs/ecs-aws-otel-sidecar-collector"
+          awslogs-create-group  = "true"
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+          max-buffer-size = "25m"
+          mode = "non-blocking"
+
+        }
+       
+      },
+      environment = []
+      mountPoints = []
+      name = var.ecs.otel_collector_container_name
+      systemControls = []
+      volumesFrom = []
+     
+    },
+    {
+      cpu = var.ecs.cpu
+      essential = true 
+      image = "263427518575.dkr.ecr.us-east-1.amazonaws.com/restaurant-web-prod:9021937-20250629-113654"
+      logConfiguration = {
+        logDriver = "awslogs"
+        secretOptions = []
+        options = {
+          awslogs-create-group = "true"
+          awslogs-group = "/ecs/restaurant-web-${var.environment}-task-defination"
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+          max-buffer-size       = "25m"
+          mode                  = "non-blocking"
+        }
+      }
+      mountPoints = []
+      memory = var.ecs.memory
+      name = var.ecs.restaurant_web_container_name
+      environment = []
+
+      portMappings = [
+        {
+          appProtocol = "http"
+          containerPort = 6002
+          hostPort = 6002
+          name = "restaurant-web-${var.environment}-port"
+          protocol = "tcp"
+          
+        },
+      ]
+  
+    }
+  ])
+}
+
+
+
+resource "aws_ecs_service" "restaurant_web_service" {
+  name = "restaurant-web-${var.environment}-service"
+  desired_count = var.ecs.desired_count
+  enable_ecs_managed_tags = var.ecs.enable_ecs_managed_tags
+  enable_execute_command  = var.ecs.restaurant_web_enable_execute_command
+  health_check_grace_period_seconds = 0
+  task_definition = "${aws_ecs_task_definition.restaurant_web_task_defination.family}:${aws_ecs_task_definition.restaurant_web_task_defination.revision}"
+  propagate_tags = "NONE"
+  
+  tags = {}
+  alarms {
+    alarm_names = []
+    enable = false 
+    rollback = false 
+  }
+
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_configuration {
+    bake_time_in_minutes = "0"
+    strategy = "ROLLING"
+  }
+
+  capacity_provider_strategy {
+    base = 0
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
+
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+
+  load_balancer {
+    container_name = var.ecs.restaurant_web_container_name
+    container_port = 6002
+    target_group_arn = var.restaurant_web_target_group_arn
+  }
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [ aws_security_group.restaurant_web_service_sg.id ]
+    subnets = [
+      var.private_subnet1,
+      var.private_subnet2,
+      var.private_subnet3
+    ]
+}
+}
+
+
+########################################## super-admin
+
+resource "aws_ecs_task_definition" "super_admin_task_defination" {
+  family                   = "super-admin-${var.environment}-task-defination"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.ecs.cpu
+  memory                   = var.ecs.memory
+  task_role_arn            = aws_iam_role.ecs_task_definition_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_definition_role.arn
+  
+
+  runtime_platform {
+    cpu_architecture        = "X86_64"
+    operating_system_family = "LINUX"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = var.ecs.otel_collector_container_name
+      image     = var.ecs.otel_collector_image_arn
+      essential = true
+      
+      command   = [
+        "--config=/etc/ecs/ecs-cloudwatch.yaml"
+        ]
+      environment = []
+      mountPoints = []
+      portMappings = []
+      systemControls = []
+      volumesFrom = []
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/ecs-aws-otel-sidecar-collector"
+          awslogs-create-group  = "true"
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+          max-buffer-size = "25m"
+          mode = "non-blocking"
+
+        }
+       
+      },
+      environment = []
+      mountPoints = []
+      name = var.ecs.otel_collector_container_name
+      systemControls = []
+      volumesFrom = []
+     
+    },
+    {
+      cpu = var.ecs.cpu
+      essential = true 
+      image = "263427518575.dkr.ecr.us-east-1.amazonaws.com/super-admin-prod:3147420-20250629-113700"
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group = "true"
+          awslogs-group = "/ecs/super-admin-${var.environment}-task-defination"
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+          max-buffer-size       = "25m"
+          mode                  = "non-blocking"
+        }
+      }
+      mountPoints = []
+      memory = var.ecs.memory
+      name = var.ecs.super_admin_container_name
+      environment = []
+      systemControls = []
+      volumesFrom = []
+
+      portMappings = [
+        {
+          appProtocol = "http"
+          containerPort = 6003
+          hostPort = 6003
+          name = "super-admin-${var.environment}-port"
+          protocol = "tcp"
+          
+        },
+      ]
+  
+    }
+  ])
+}
+
+
+
+resource "aws_ecs_service" "super_admin_service" {
+  name = "super-admin-${var.environment}-service"
+  desired_count = var.ecs.desired_count
+  enable_ecs_managed_tags = var.ecs.enable_ecs_managed_tags
+  enable_execute_command  = var.ecs.restaurant_web_enable_execute_command
+  health_check_grace_period_seconds = 0
+  task_definition = "${aws_ecs_task_definition.super_admin_task_defination.family}:${aws_ecs_task_definition.super_admin_task_defination.revision}"
+  propagate_tags = "NONE"
+  
+  tags = {}
+  alarms {
+    alarm_names = []
+    enable = false 
+    rollback = false 
+  }
+
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_configuration {
+    bake_time_in_minutes = "0"
+    strategy = "ROLLING"
+  }
+
+  capacity_provider_strategy {
+    base = 0
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
+
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+
+  load_balancer {
+    container_name = var.ecs.super_admin_container_name
+    container_port = 6003
+    target_group_arn = var.super_admin_target_group_arn
+  }
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [ aws_security_group.super_admin_service_sg.id ]
+    subnets = [
+      var.private_subnet1,
+      var.private_subnet2,
+      var.private_subnet3
+    ]
+}
+}
+
+
+########################################## user-service
+
+resource "aws_ecs_task_definition" "user_service_task_defination" {
+  family                   = "user-${var.environment}-task-defination"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.ecs.cpu
+  memory                   = var.ecs.memory
+  task_role_arn            = aws_iam_role.ecs_task_definition_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_definition_role.arn
+  
+
+  runtime_platform {
+    cpu_architecture        = "X86_64"
+    operating_system_family = "LINUX"
+  }
+
+  container_definitions = jsonencode([
+  {
+    cpu       = var.ecs.cpu
+    memory    = var.ecs.memory
+    name      = var.ecs.user_service_container_name
+    image     = "263427518575.dkr.ecr.us-east-1.amazonaws.com/user-prod:16786e1-20251118-161526"
+    essential = true
+
+    environment   = []
+    mountPoints   = []
+    systemControls = []
+    volumesFrom   = []
+
+    portMappings = [
+      {
+        appProtocol   = "http"
+        containerPort = 3005
+        hostPort      = 3005
+        name          = "user-${var.environment}-port"
+        protocol      = "tcp"
+      }
+    ]
+
+    logConfiguration = {
+      logDriver     = "awslogs"
+      secretOptions = []
+      options = {
+        awslogs-group         = "/ecs/user-${var.environment}-task-defination"
+        awslogs-create-group  = "true"
+        awslogs-region        = var.region
+        awslogs-stream-prefix = "ecs"
+        max-buffer-size       = "25m"
+        mode                  = "non-blocking"
+      }
+    }
+  },
+
+  {
+    command = [
+      "--config=/etc/ecs/ecs-cloudwatch.yaml"
+    ]
+    essential = true
+    image     = var.ecs.otel_collector_image_arn
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      secretOptions = []
+      options = {
+        awslogs-create-group = "true"
+        awslogs-group        = var.ecs.otel_collector_log_group_name
+        awslogs-region       = var.region
+        awslogs-stream-prefix = "ecs"
+        max-buffer-size      = "25m"
+        mode                 = "non-blocking"
+      }
+    }
+    portMappings = []
+
+    mountPoints     = []
+    name            = var.ecs.otel_collector_container_name
+    environment     = []
+    systemControls  = []
+    volumesFrom     = []
+  }
+])
+}
+
+resource "aws_ecs_service" "user_service" {
+  name = "user-${var.environment}-service"
+  desired_count = var.ecs.desired_count
+  enable_ecs_managed_tags = var.ecs.enable_ecs_managed_tags
+  enable_execute_command  = var.ecs.user_service_enable_execute_command
+  health_check_grace_period_seconds = 0
+  task_definition = "${aws_ecs_task_definition.user_service_task_defination.family}:${aws_ecs_task_definition.user_service_task_defination.revision}"
+  propagate_tags = "NONE"
+  
+  tags = {}
+  alarms {
+    alarm_names = []
+    enable = false 
+    rollback = false 
+  }
+
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_configuration {
+    bake_time_in_minutes = "0"
+    strategy = "ROLLING"
+  }
+
+  capacity_provider_strategy {
+    base = 0
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
+
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+
+  load_balancer {
+    container_name = var.ecs.user_service_container_name
+    container_port = 3005
+    target_group_arn = var.user_service_target_group_arn
+  }
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [ aws_security_group.user_service_sg.id ]
     subnets = [
       var.private_subnet1,
       var.private_subnet2,

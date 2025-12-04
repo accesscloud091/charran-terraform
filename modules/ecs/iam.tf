@@ -265,5 +265,97 @@ resource "aws_security_group" "nginx_service_sg" {
 }
 
 
+resource "aws_security_group" "restaurant_service_sg" {
+  name        = "resturant-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3004
+    to_port     = 3004
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "restaurant_web_service_sg" {
+  name        = "resturant-web-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 6002
+    to_port     = 6002
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "super_admin_service_sg" {
+  name        = "super-admin-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 6003
+    to_port     = 6003
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
+resource "aws_security_group" "user_service_sg" {
+  name        = "user-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 3005
+    to_port     = 3005
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
 
 

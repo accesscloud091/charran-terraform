@@ -48,3 +48,36 @@ output "nginx_target_group_arn" {
     value = aws_lb_target_group.nginx_service.arn
   
 }
+
+output "restaurant_target_group_arn" {
+    value =  aws_lb_target_group.restaurant_service.arn
+}
+
+output "restaurant_web_target_group_arn" {
+    value = aws_lb_target_group.restaurant_web.arn
+  
+}
+
+output "super_admin_target_group_arn" {
+    value = aws_lb_target_group.super_admin.arn
+  
+}
+output "user_service_target_group_arn" {
+    value = aws_lb_target_group.user_service.arn
+  
+}
+
+# output "kowl_target_group_arn" {
+#     value = aws_lb_target_group.
+  
+# }
+
+output "kowl_lb_name" {
+    value = aws_lb.kowlUI.dns_name
+  
+}
+
+output "kowl_lb_zone_id" {
+    value = aws_lb.kowlUI.zone_id
+  
+}

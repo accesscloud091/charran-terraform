@@ -36,6 +36,14 @@ module "ecs" {
   mobile_target_group_arn = module.load_balancer.mobile_target_group_arn
   notification_target_group_arn = module.load_balancer.notification_target_group_arn
   nginx_target_group_arn = module.load_balancer.nginx_target_group_arn
+  restaurant_target_group_arn = module.load_balancer.restaurant_target_group_arn
+  private_subnet4 = module.vpc.private_subnet4
+  private_subnet5 = module.vpc.private_subnet5
+  private_subnet6 = module.vpc.private_subnet6
+  restaurant_web_target_group_arn = module.load_balancer.restaurant_web_target_group_arn
+  super_admin_target_group_arn = module.load_balancer.super_admin_target_group_arn
+  user_service_target_group_arn = module.load_balancer.user_service_target_group_arn
+
 }
 
 module "load_balancer" {
@@ -43,11 +51,16 @@ module "load_balancer" {
   lb = var.lb 
   environment = var.environment
   region = var.region
+  project_name = var.project_name
+  kowl_lb = var.kowl_lb
   vpc_id = module.vpc.vpc_id
   public_subnet1 = module.vpc.public_subnet1
   public_subnet2 = module.vpc.public_subnet2
   public_subnet3 = module.vpc.public_subnet3
   certificate_arn = module.acm.certificate_arn
+  private_subnet1 = module.vpc.private_subnet1
+  private_subnet2 = module.vpc.private_subnet2
+  private_subnet6 = module.vpc.private_subnet6
 }
 
 module "route53" {
@@ -58,6 +71,8 @@ module "route53" {
   record_name = module.acm.record_name
   record_type = module.acm.record_type
   record_value = module.acm.record_value
+  kowl_lb_name = module.load_balancer.kowl_lb_name
+  kowl_lb_zone_id = module.load_balancer.kowl_lb_zone_id
 }
 
 module "acm" {

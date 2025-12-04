@@ -29,5 +29,27 @@ resource "aws_route53_record" "api_cert_validation" {
   ttl = 300    
 }
 
+#####################kowl
+resource "aws_route53_record" "kowl" {
+  zone_id = aws_route53_zone.zone.zone_id
+  name    = "kowl.${aws_route53_zone.zone.name}"
+  type    = var.route53.record_type
+  alias {
+    name                   = var.kowl_lb_name   
+    zone_id                = var.kowl_lb_zone_id    
+    evaluate_target_health = true
+  }
+}
 
+# resource "aws_route53_record" "api_cert_validation" {
+#   zone_id = aws_route53_zone.zone.zone_id
+
+#   name =  var.record_name 
+#   type  =  var.record_type 
+#   records = [ var.record_value ]
+
+
+
+#   ttl = 300    
+# }
 
