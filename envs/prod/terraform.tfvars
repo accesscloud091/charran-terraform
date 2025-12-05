@@ -218,6 +218,9 @@ pipeline = {
     execution_mode = "QUEUED"
     pipeline_action_mode  = "REPLACE_ON_FAILURE"
 
+    resturant_build_timeout = 600
+    resturant_privileged_mode = true
+    
 
 
 }

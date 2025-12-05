@@ -132,12 +132,12 @@ resource "aws_lb" "lb" {
   security_groups    = [aws_security_group.lb_sg.id]
   enable_deletion_protection =  var.lb.enable_deletion_protection
   idle_timeout = var.lb.idle_timeout
-  # access_logs {
-  #   enabled = true
-  #   bucket = var.s3_lb_access_logs
+  access_logs {
+    enabled = true
+    bucket = var.lb_s3_logs_bucket
     
 
-  # }
+  }
 
   subnets = [
     var.public_subnet1,
@@ -1022,53 +1022,66 @@ resource "aws_lb_target_group" "kowlUI_target_group" {
 ############################################
 
 resource "aws_lb_listener" "kowlUI_listener" {
-  load_balancer_arn = aws_lb.lb.arn
+  load_balancer_arn = aws_lb.kowlUI.arn
   port              = 443
-  protocol          = "HTTP"
-  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-Res-2021-06"
-  certificate_arn   = var.certificate_arn
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06" 
+  certificate_arn   = var.kowl_certificate_arn
 
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.super_admin.arn
+    target_group_arn = aws_lb_target_group.kowlUI_target_group.arn
     forward {
-      stickiness {
-        duration = 3600
-        enabled = false
-      }
+      # stickiness {
+      #   duration = 1
+      #   enabled = false
+      # }
+     
 
       target_group {
-        arn = aws_lb_target_group.super_admin.arn
+        arn = aws_lb_target_group.kowlUI_target_group.arn
         weight = 1
       }
+      # mutual_authentication {
+      #   ignore_client_certificate_expiry = false
+      #   mode = "off"
+      # }
     }
        
       }
+      # mutual_authentication {
+      #   ignore_client_certificate_expiry = false
+      #   mode = "off"
+      # }
 }
 
-resource "aws_lb_listener_rule" "kowlUI_listener_rule" {
-  listener_arn = aws_lb_listener.lb_https.arn
-  priority     = 3
+# resource "aws_lb_listener_rule" "kowlUI_listener_rule" {
+#   listener_arn = aws_lb_listener.kowlUI_listener.arn
+#   priority     = 99999
 
-  action {
-    type             = "forward"
-    # target_group_arn = aws_lb_target_group.nginx_service.arn
-    forward {
-    target_group {
-      arn = aws_lb_target_group.nginx_service.arn
-    }
-    stickiness {
-      duration = 3600
-      enabled = false
-    }
-  }
-  }
+#   action {
+#     type             = "forward"
+#     # order = 0
+#     # target_group_arn = aws_lb_target_group.nginx_service.arn
+#     forward {
+#     target_group {
+#       arn = aws_lb_target_group.kowlUI_target_group.arn
+#       weight = 1
+#     }
+#     # stickiness {
+#     #   duration = 0
+#     #   enabled = false
+#     # }
+#   }
+#   }
 
 
-  condition {
-    path_pattern {
-      values = ["/restaurant-web/*"]
-    }
-  }
-}
+#   # condition {
+#   #   # path_pattern {
+#   #   #   values = ["/restaurant-web/*"]
+#   #   #   regex_values = []
+#   #   # }
+#   # }
+# }
+

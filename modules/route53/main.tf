@@ -35,7 +35,7 @@ resource "aws_route53_record" "kowl" {
   name    = "kowl.${aws_route53_zone.zone.name}"
   type    = var.route53.record_type
   alias {
-    name                   = var.kowl_lb_name   
+    name                   = "dualstack.${var.kowl_lb_name}"   
     zone_id                = var.kowl_lb_zone_id    
     evaluate_target_health = true
   }

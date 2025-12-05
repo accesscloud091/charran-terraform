@@ -149,3 +149,11 @@ variable "user_service_target_group_arn" {
     type = string
   
 }
+variable "kowl_target_group_arn" {
+    type = string
+  
+}
+variable "kowl_load_balancer_sg_id" {
+    type = string
+  
+}

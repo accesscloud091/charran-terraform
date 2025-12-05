@@ -682,15 +682,15 @@ resource "aws_ecs_service" "kowl_service" {
     rollback = true
   }
 
-  # load_balancer {
-  #   container_name = var.ecs.kowl_container_name
-  #   container_port = 8080
-  #   target_group_arn = var.kowl_target_group_arn
-  # }
+  load_balancer {
+    container_name = var.ecs.kowl_container_name
+    container_port = 8080
+    target_group_arn = var.kowl_target_group_arn
+  }
 
   network_configuration {
     assign_public_ip = true
-    security_groups = [ aws_security_group.gift_service_sg.id ]
+    security_groups = [ aws_security_group.kowl_service_sg.id ]
     subnets = [
       var.private_subnet1,
       var.private_subnet2,

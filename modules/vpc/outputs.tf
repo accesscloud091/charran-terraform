@@ -43,3 +43,7 @@ output "private_subnet4" {
     value = aws_subnet.pvt_subnet4.id
   
 }
+output "openvpn_sg" {
+    value = aws_security_group.openvpn_sg.id
+  
+}

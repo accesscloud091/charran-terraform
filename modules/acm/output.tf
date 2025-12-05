@@ -15,3 +15,7 @@ output "record_value" {
 output "certificate_arn" {
   value = aws_acm_certificate.cert.arn
 }
+
+output "kowl_certificate_arn" {
+  value = aws_acm_certificate.cert_kowl.arn  
+}

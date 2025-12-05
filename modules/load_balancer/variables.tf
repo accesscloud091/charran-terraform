@@ -54,3 +54,11 @@ variable "private_subnet6" {
     type = string
   
 }
+variable "kowl_certificate_arn" {
+    type = string
+  
+}
+variable "lb_s3_logs_bucket" {
+    type = string
+  
+}

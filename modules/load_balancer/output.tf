@@ -81,3 +81,12 @@ output "kowl_lb_zone_id" {
     value = aws_lb.kowlUI.zone_id
   
 }
+output "kowl_target_group_arn" {
+    value = aws_lb_target_group.kowlUI_target_group.arn
+  
+}
+
+output "kowl_load_balancer_sg_id" {
+    value = aws_security_group.kowl_lb_sg.id
+  
+}

@@ -9,3 +9,10 @@ resource "aws_secretsmanager_secret" "accounting_secrets" {
   recovery_window_in_days = null
   force_overwrite_replica_secret = null
 }
+
+resource "aws_secretsmanager_secret" "restaurant_secrets" {
+  name = "${var.project_name}/${var.environment}/restaurant"
+  description = "opalink/prod/restaurant"
+  recovery_window_in_days = null
+  force_overwrite_replica_secret = null
+}

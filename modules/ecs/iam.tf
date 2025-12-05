@@ -358,4 +358,27 @@ resource "aws_security_group" "user_service_sg" {
 }
 
 
+resource "aws_security_group" "kowl_service_sg" {
+  name        = "kowl-ecs-sg"
+  description = "kowl-ecs-sg"
+  vpc_id      = var.vpc_id
+ 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = []
+    self = false
+    security_groups = [ var.kowl_load_balancer_sg_id ]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    self = false
+  }
+
+}
+
 

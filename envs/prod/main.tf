@@ -1,6 +1,7 @@
 module "vpc" {
   source = "../../modules/vpc"
   vpc = var.vpc
+  environment = var.environment
 }
 
 module "ecr" {
@@ -43,6 +44,8 @@ module "ecs" {
   restaurant_web_target_group_arn = module.load_balancer.restaurant_web_target_group_arn
   super_admin_target_group_arn = module.load_balancer.super_admin_target_group_arn
   user_service_target_group_arn = module.load_balancer.user_service_target_group_arn
+  kowl_target_group_arn = module.load_balancer.kowl_target_group_arn
+  kowl_load_balancer_sg_id = module.load_balancer.kowl_load_balancer_sg_id
 
 }
 
@@ -54,6 +57,7 @@ module "load_balancer" {
   project_name = var.project_name
   kowl_lb = var.kowl_lb
   vpc_id = module.vpc.vpc_id
+  kowl_certificate_arn = module.acm.kowl_certificate_arn
   public_subnet1 = module.vpc.public_subnet1
   public_subnet2 = module.vpc.public_subnet2
   public_subnet3 = module.vpc.public_subnet3
@@ -61,6 +65,7 @@ module "load_balancer" {
   private_subnet1 = module.vpc.private_subnet1
   private_subnet2 = module.vpc.private_subnet2
   private_subnet6 = module.vpc.private_subnet6
+  lb_s3_logs_bucket = module.s3.lb_s3_logs_bucket
 }
 
 module "route53" {
@@ -96,9 +101,29 @@ module "pipeline" {
   pipeline = var.pipeline
   account_id = var.account_id 
   environment = var.environment
+  vpc_id = module.vpc.vpc_id
   region = var.region
   provider_type = var.provider_type
   project_name = var.project_name
   accounting_secret_arn = module.secrets.accounting_secret_arn
   service_role_path = var.service_role_path
+  restaurant_secret_arn = module.secrets.restaurant_secret_arn
+  restaurant_ecs_sg = module.ecs.restaurant_ecs_sg
+  openvpn_sg = module.vpc.openvpn_sg
+  private_subnet1 = module.vpc.private_subnet1
+  private_subnet2 = module.vpc.private_subnet2
+  private_subnet3 = module.vpc.private_subnet3
+  private_subnet4 = module.vpc.private_subnet4
+  private_subnet5 = module.vpc.private_subnet5
+  private_subnet6 = module.vpc.private_subnet6
+
+}
+
+module "s3" {
+  source = "../../modules/s3"
+  project_name = var.project_name
+  environment = var.environment
+  account_id = var.account_id
+
+  
 }
