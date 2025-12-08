@@ -220,7 +220,28 @@ pipeline = {
 
     resturant_build_timeout = 600
     resturant_privileged_mode = true
-    
+    provider = "CodeStarSourceConnection"
+    # concurrent_build_limit = 0
+
+    cache_type = "NO_CACHE"
+    cloudwatch_logs_status = "ENABLED"
+    s3_logs_encryption_disabled = false
+    s3_logs_status = "DISABLED"
+
+    git_clone_depth = 0
+    insecure_ssl = false
+    report_build_status = false
+
+    deploy_stage_on_failure = "ROLLBACK"
+    build_stage_on_failure = "RETRY"
+    source_stage_on_failure = "RETRY"
+
+    restaurant_execution_mode = "SUPERSEDED"
+
+    auth_privileged_mode = true
+
+
+
 
 
 }

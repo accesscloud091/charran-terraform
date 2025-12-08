@@ -1,13 +1,18 @@
 resource "aws_codebuild_project" "resturant" {
   name          = "${var.project_name}-${var.environment}-resturant-build"
-  service_role  = aws_iam_role.accounting_service_role.arn
+  service_role = aws_iam_role.codepipeline_role.arn
+  # service_role  = aws_iam_role.accounting_service_role.arn
   build_timeout = var.pipeline.resturant_build_timeout
 
   artifacts {
-    name = "${aws_s3_buckets3_bucket_restaurant_codepipeline.arn}/${project_name}-restaurant-p/BuildArtif/pW9vwkr"
+    encryption_disabled = false
+    override_artifact_name = false
+    name = "${var.project_name}-${var.environment}-resturant-build"
     packaging = "NONE"
     type = "CODEPIPELINE"
   }
+
+  
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
@@ -61,7 +66,23 @@ resource "aws_codebuild_project" "resturant" {
 
 
   }
+  cache {
+    modes = []
+    type = var.pipeline.cache_type
+  }
+  logs_config {
+    cloudwatch_logs {
+      status = var.pipeline.cloudwatch_logs_status
+     
+    }
+    s3_logs {
+      encryption_disabled = var.pipeline.s3_logs_encryption_disabled
+      status = var.pipeline.s3_logs_status
+    }
+  }
 
+  
+  
   vpc_config {
     security_group_ids = [
         aws_security_group.codebuild_database_access_service_sg.id,
@@ -84,7 +105,12 @@ resource "aws_codebuild_project" "resturant" {
   source {
     type            = "CODEPIPELINE"
     buildspec       =  file("${path.module}/resturant_buildspec.yaml")
+    git_clone_depth = var.pipeline.git_clone_depth
+    insecure_ssl = var.pipeline.insecure_ssl
+    report_build_status = var.pipeline.report_build_status
   }
+
+  tags = {}
 
 
 }

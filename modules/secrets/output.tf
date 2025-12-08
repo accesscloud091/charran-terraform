@@ -12,3 +12,12 @@ output "restaurant_secret_arn" {
     value = aws_secretsmanager_secret.restaurant_secrets.name
   
 }
+output "auth_secret_arn" {
+    value = aws_secretsmanager_secret.auth_secrets.name
+  
+}
+
+output "gift_secret_arn" {
+    value = aws_secretsmanager_secret.gift_secrets
+  
+}

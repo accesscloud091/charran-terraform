@@ -66,3 +66,96 @@ egress   {
 
 
 }
+
+resource "aws_security_group" "auth_service_sg" {
+  name        = "auth-${var.environment}-sg"
+  description = "Created in ECS Console"
+  vpc_id      = var.vpc_id
+  tags = {}
+
+ingress {
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    security_groups  = [ var.load_balancer_sg_id ]
+    self = false
+  }
+
+
+egress   {
+    cidr_blocks      = [
+       "0.0.0.0/0" ]
+    from_port        = 0
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = -1
+    security_groups  = []
+    self             = false
+    to_port          = 0
+                
+            }
+}
+
+resource "aws_security_group" "auth_rds_sg" {
+  name        = "${var.project_name}-${var.environment}-auth-sg-rds"
+  description = "opalink-prod-auth-sg-rds"
+  vpc_id      = var.vpc_id
+  tags = {}
+
+ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups  = [ aws_security_group.auth_service_sg.id,
+            aws_security_group.codebuild_database_access_service_sg.id,
+            var.openvpn_sg,
+     ]
+    self = false
+  }
+
+
+egress   {
+    cidr_blocks      = [
+       "0.0.0.0/0" ]
+    from_port        = 0
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = -1
+    security_groups  = []
+    self             = false
+    to_port          = 0
+                
+            }
+}
+
+resource "aws_security_group" "gift_sg_rds" {
+  name        = "${var.project_name}-${var.environment}-gift-sg-rds"
+  description = "opalink-prod-auth-sg-rds"
+  vpc_id      = var.vpc_id
+  tags = {}
+
+ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups  = [ aws_security_group.auth_service_sg.id,
+            aws_security_group.codebuild_database_access_service_sg.id,
+            var.openvpn_sg,
+     ]
+    self = false
+  }
+
+
+egress   {
+    cidr_blocks      = [
+       "0.0.0.0/0" ]
+    from_port        = 0
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = -1
+    security_groups  = []
+    self             = false
+    to_port          = 0
+                
+            }
+}

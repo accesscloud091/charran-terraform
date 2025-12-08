@@ -7,4 +7,3 @@ resource "aws_cloudwatch_log_group" "accounting_otel_sidecar_collector" {
   name              = var.accounting_otel_sidecar_collector
 #   retention_in_days = 30
 }
-    

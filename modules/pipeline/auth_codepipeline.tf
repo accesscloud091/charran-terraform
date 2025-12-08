@@ -1,8 +1,9 @@
-resource "aws_codepipeline" "accounting_codepipeline" {
-  name            = "${var.project_name}-accounting-${var.environment}-pipeline"
+resource "aws_codepipeline" "auth_codepipeline" {
+  name            = "${var.project_name}-auth-${var.environment}-pipeline"
   pipeline_type   =  var.pipeline.codepipeline_type                       
   execution_mode  = var.pipeline.execution_mode
   role_arn        = aws_iam_role.codepipeline_role.arn
+#   role_arn = aws_iam_role.accounting_service_role.arn
 
 
   artifact_store {
@@ -19,18 +20,19 @@ resource "aws_codepipeline" "accounting_codepipeline" {
     action {
       name             = "Source"
       category         = "Source"
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
       version          = "1"
       run_order        = 1
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        BranchName         = "feature/main"
-        FullRepositoryId   = "opalink-app/accounting-service"
-        ConnectionArn      = aws_codestarconnections_connection.codestar_connection.arn
-        OutputArtifactFormat = "CODE_ZIP"
-        DetectChanges = "true"
+        Branch       = "feature/main"
+        Owner = "${var.project_name}-app"
+        PollForSourceChanges = false
+        Repo = "auth-service"
+        OAuthToken = null
+       
       }
       input_artifacts = []
       namespace = "SourceVariables"
@@ -57,7 +59,7 @@ resource "aws_codepipeline" "accounting_codepipeline" {
       name             = "Build"
       category         = "Build"
       configuration = {
-        ProjectName = aws_codebuild_project.accounting.name
+        ProjectName = aws_codebuild_project.auth.name
       }
       input_artifacts  = [
         "SourceArtifact",
@@ -92,7 +94,8 @@ resource "aws_codepipeline" "accounting_codepipeline" {
       category        = "Deploy"
        configuration = {
         ClusterName = var.ecs_cluster_name
-        ServiceName = var.accounting_service_name
+        ServiceName = var.auth_service_name
+        DeploymentTimeout = "10"
       }
       input_artifacts = [
         "BuildArtifact"

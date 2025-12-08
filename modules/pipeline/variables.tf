@@ -74,3 +74,34 @@ variable "private_subnet6" {
     type = string
   
 }
+
+variable "ecs_cluster_name" {
+    type = string
+  
+}
+variable "accounting_service_name" {
+    type = string
+  
+}
+variable "restaurant_service_name" {
+    type = string
+  
+}
+variable "auth_secret_arn" {
+    type = string
+  
+}
+
+variable "load_balancer_sg_id" {
+    type = string
+  
+}
+variable "auth_service_name" {
+    type = string
+  
+}
+
+variable "gift_service_name" {
+    type = string
+  
+}

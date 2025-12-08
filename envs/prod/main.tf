@@ -116,6 +116,16 @@ module "pipeline" {
   private_subnet4 = module.vpc.private_subnet4
   private_subnet5 = module.vpc.private_subnet5
   private_subnet6 = module.vpc.private_subnet6
+  ecs_cluster_name = module.ecs.ecs_cluster_name
+  accounting_service_name = module.ecs.accounting_service_name
+  restaurant_service_name = module.ecs.restaurant_service_name
+  auth_secret_arn = module.secrets.auth_secret_arn
+  load_balancer_sg_id = module.load_balancer.load_balancer_sg_id
+  auth_service_name = module.ecs.auth_service_name
+  gift_service_name = module.ecs.gift_service_name
+
+
+  
 
 }
 

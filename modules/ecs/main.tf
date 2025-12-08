@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "accounting_task_definition" {
   container_definitions = jsonencode([
     {
       name       = var.ecs.accounting_container_name,
-      image      = "263427518575.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:458dca2-20250929-224918"
+      image      = "263427518575.dkr.ecr.us-east-1.amazonaws.com/accounting-prod:ec1d7bd-20251205-034541"
       essential  = true
       cpu        = 1024
       memory     = 2048
@@ -445,7 +445,7 @@ resource "aws_ecs_task_definition" "gift_task_defination" {
 
     {
       name      = var.ecs.gift_container_name
-      image     = "263427518575.dkr.ecr.us-east-1.amazonaws.com/gift-prod:4670cef-20251203-192353"
+      image     = "263427518575.dkr.ecr.us-east-1.amazonaws.com/gift-prod:69b6f9b-20251207-205657" 
       essential = true
       cpu       = var.ecs.cpu
       memory    = var.ecs.memory
